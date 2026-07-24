@@ -1,0 +1,34 @@
+name: telegram-keepalive
+
+on:
+  schedule:
+    # Every 3 days at 07:00 UTC. Well inside Telegram's 6-month idle window.
+    # (GitHub may delay scheduled runs under load; the 3-day cadence has huge margin.)
+    - cron: "0 7 */3 * *"
+  workflow_dispatch: {}   # lets you trigger a run manually from the Actions tab
+
+concurrency:
+  group: telegram-keepalive
+  cancel-in-progress: false
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Run keepalive
+        env:
+          TG_API_ID: ${{ secrets.TG_API_ID }}
+          TG_API_HASH: ${{ secrets.TG_API_HASH }}
+          TG_SESSION_STRING: ${{ secrets.TG_SESSION_STRING }}
+        run: python keepalive.py
