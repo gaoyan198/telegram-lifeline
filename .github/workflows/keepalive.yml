@@ -15,6 +15,8 @@ jobs:
   keepalive:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: write   # needed to push the heartbeat commit in the last step
     steps:
       - uses: actions/checkout@v4
 
@@ -32,3 +34,22 @@ jobs:
           TG_API_HASH: ${{ secrets.TG_API_HASH }}
           TG_SESSION_STRING: ${{ secrets.TG_SESSION_STRING }}
         run: python keepalive.py
+
+      # GitHub disables scheduled workflows on repos with 60 days of no activity.
+      # This repo gets no human commits, so the cron would switch itself off and the
+      # keepalive would die silently. A commit per run counts as activity and resets
+      # that clock. Runs only if the keepalive above succeeded — a repo whose keepalive
+      # is broken should be allowed to go stale rather than fake liveness.
+      - name: Heartbeat commit (resets GitHub's 60-day scheduler clock)
+        run: |
+          set -euo pipefail
+          date -u +"%Y-%m-%dT%H:%M:%SZ keepalive ok" >> last-run.txt
+          # Keep the log bounded; only the recent history is useful.
+          tail -n 60 last-run.txt > last-run.tmp && mv last-run.tmp last-run.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add last-run.txt
+          git commit -m "chore: keepalive heartbeat $(date -u +%F)"
+          # Another run may have landed first; rebase rather than fail the job.
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

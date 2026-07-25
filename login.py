@@ -16,21 +16,22 @@ Then copy the printed string into the GitHub secret TG_SESSION_STRING and
 DELETE it from your machine / shell history.
 """
 
+import asyncio
 import os
 import sys
 
-from telethon.sync import TelegramClient
+from telethon import TelegramClient
 from telethon.sessions import StringSession
 
 
-def main() -> None:
+async def main() -> None:
     api_id = os.environ.get("TG_API_ID")
     api_hash = os.environ.get("TG_API_HASH")
     if not api_id or not api_hash:
         sys.exit("Set TG_API_ID and TG_API_HASH first (see https://my.telegram.org).")
 
-    with TelegramClient(StringSession(), int(api_id), api_hash) as client:
-        me = client.get_me()
+    async with TelegramClient(StringSession(), int(api_id), api_hash) as client:
+        me = await client.get_me()
         session_string = client.session.save()
         print("\n" + "=" * 60)
         print(f"Logged in as: {me.first_name} (@{me.username})  id={me.id}")
@@ -44,4 +45,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

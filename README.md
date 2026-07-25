@@ -60,6 +60,15 @@ sessions.
 GitHub Actions scheduled workflows on a private repo run within the free monthly minutes;
 this job takes seconds a few times a week. Effectively $0.
 
+## Why the repo commits to itself
+
+GitHub disables scheduled workflows after **60 days with no repository activity**. Since
+nobody commits here, the cron would eventually switch itself off and the keepalive would
+die silently — exactly the failure this project exists to prevent. So each successful run
+appends a line to `last-run.txt` and pushes it. That commit is the repository activity that
+keeps the scheduler alive. `last-run.txt` is also a plain-text audit log: if the last entry
+is more than a few days old, something is broken.
+
 ## Scope / ethics
 
 Owner-only, single account. This does **not** message other people, scrape, or automate
