@@ -3,6 +3,8 @@
 Keep one Telegram account **logged in forever** (no verification code) and **never idle**
 (never hit the 6-month termination) — for **free**, with **no server**.
 
+**Locked out right now? → [PLAYBOOK.md](PLAYBOOK.md).** Step-by-step recovery, no SIM needed.
+
 See [PRD.md](PRD.md) for the full rationale. Quick version:
 
 - **No more codes:** Telegram only asks for a code on a *new* login. Authorize once,
