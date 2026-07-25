@@ -33,6 +33,7 @@ jobs:
           TG_API_ID: ${{ secrets.TG_API_ID }}
           TG_API_HASH: ${{ secrets.TG_API_HASH }}
           TG_SESSION_STRING: ${{ secrets.TG_SESSION_STRING }}
+          HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }}
         run: python keepalive.py
 
       # GitHub disables scheduled workflows on repos with 60 days of no activity.
@@ -53,3 +54,14 @@ jobs:
           # Another run may have landed first; rebase rather than fail the job.
           git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
           git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      # keepalive.py reports its own failures, but it can't report a failure that
+      # happened before Python ran (checkout, setup-python, pip). This covers those.
+      - name: Report job failure to the monitor
+        if: failure() && env.HEALTHCHECK_URL != ''
+        env:
+          HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }}
+        run: |
+          curl -fsS -m 10 --retry 3 \
+            --data "workflow job failed: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            "${HEALTHCHECK_URL%/}/fail" || true

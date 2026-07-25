@@ -69,6 +69,17 @@ appends a line to `last-run.txt` and pushes it. That commit is the repository ac
 keeps the scheduler alive. `last-run.txt` is also a plain-text audit log: if the last entry
 is more than a few days old, something is broken.
 
+## Monitoring (dead-man's switch)
+
+GitHub emails you when a run *fails*. It cannot tell you when runs simply **stop** —
+Actions disabled, cron silently dropped — and that silence is indistinguishable from
+health. So each successful run pings a healthchecks.io URL; if a ping doesn't arrive on
+time, healthchecks.io emails you. Failures ping `/fail` with the reason attached.
+
+Set the repo secret `HEALTHCHECK_URL` to your check's ping URL. Configure the check with
+cron `0 7 */3 * *` (UTC) and a grace period of ~2 days, since GitHub delays scheduled runs
+under load. If the secret is unset, pinging is skipped and everything else works normally.
+
 ## Scope / ethics
 
 Owner-only, single account. This does **not** message other people, scrape, or automate
