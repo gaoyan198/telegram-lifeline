@@ -44,6 +44,18 @@ See [PRD.md](PRD.md) for the full rationale. Quick version:
 
 7. **Clean up:** delete the session string from your shell history / local files.
 
+## Getting in with no phone, no SIM, no logged-in device
+
+```bash
+export TG_API_ID=... TG_API_HASH=...
+python session_login.py            # prompts for the string with hidden input
+python session_login.py --send hi  # also proves write access
+```
+
+No login code, no SMS, no 2FA prompt — the string *is* the completed authentication.
+Keep a copy in a password manager: the GitHub secret is write-only and cannot be read
+back, so that copy is the only one you can actually use.
+
 ## To log in later without a code
 
 Import the same `TG_SESSION_STRING` into any Telethon client — you're in, no code. To add
