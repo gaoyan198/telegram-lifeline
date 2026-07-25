@@ -56,6 +56,21 @@ No login code, no SMS, no 2FA prompt — the string *is* the completed authentic
 Keep a copy in a password manager: the GitHub secret is write-only and cannot be read
 back, so that copy is the only one you can actually use.
 
+## Putting the official app on a new phone, with no SIM
+
+Telegram's servers always issue a 5-digit code when a new app authorizes — that is their
+protocol and nothing can skip it. But the code is delivered as a *message to your account*,
+and your session string can read it. Your SIM is never involved.
+
+```bash
+export TG_API_ID=... TG_API_HASH=...
+# On the new device: start login, enter your phone number. Then:
+python read_login_code.py --watch
+```
+
+Type the printed code into the new device, then your 2FA password (which is never sent
+anywhere — you just know it). Done.
+
 ## To log in later without a code
 
 Import the same `TG_SESSION_STRING` into any Telethon client — you're in, no code. To add
