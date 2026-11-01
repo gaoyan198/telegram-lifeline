@@ -11,14 +11,15 @@ stress, in order, without thinking. Nothing here needs your SIM or your backup p
 
 ## What you need before any of this
 
-Everything below assumes you can reach these three things. They should all live in your
-password manager, in one entry:
+Everything below assumes you can reach these three things. They are saved in your
+password manager under the entry names shown in the **Saved as** column:
 
-| Item | What it is | Can it be recovered? |
-|---|---|---|
-| **Session string** | ~350 chars starting with `1`. Full account access. | **No.** The GitHub secret is write-only. If you lose your copy and every logged-in device, it's gone. |
-| **2FA password** | The password you chose. Never sent to you. | Yes — via the recovery email on it. |
-| **api_id / api_hash** | From <https://my.telegram.org> → API development tools | Yes — log back into that site and read them again. |
+| Item | Saved as | What it is | Can it be recovered? |
+|---|---|---|---|
+| **Session string** | `telegram` | ~350 chars starting with `1`. Full account access. | **No.** The GitHub secret is write-only. If you lose your copy and every logged-in device, it's gone. |
+| **2FA password** | — | The password you chose. Never sent to you. | Yes — via the recovery email on it. |
+| **api_id** | `tg_api_id` | From <https://my.telegram.org> → API development tools | Yes — log back into that site and read them again. |
+| **api_hash** | `tg_api_hash` | From <https://my.telegram.org> → API development tools | Yes — log back into that site and read them again. |
 
 Setup once, on any computer:
 
